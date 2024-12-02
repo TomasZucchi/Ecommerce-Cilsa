@@ -1,0 +1,78 @@
+db.administradores.insertOne({
+      nombre: "admin",
+      email: "admin@ecommerce.com",
+      password: "admin"
+    });
+
+db.usuarios.insertMany([
+      { nombre: "usuario1", email: "usuario1@ecommerce.com", password: "pass" },
+      { nombre: "usuario2", email: "usuario2@ecommerce.com", password: "pass" }
+    ]);
+
+db.categorias.insertMany([
+      { nombre: "Portátiles", descripcion: "Dispositivos portátiles como laptops y notebooks" },
+      { nombre: "Periféricos", descripcion: "Dispositivos periféricos como ratones y teclados" },
+      { nombre: "Monitores", descripcion: "Pantallas y monitores" },
+      { nombre: "Impresoras", descripcion: "Dispositivos de impresión" },
+      { nombre: "Almacenamiento", descripcion: "Dispositivos de almacenamiento como discos duros y memorias USB" },
+      { nombre: "Componentes", descripcion: "Componentes internos como tarjetas gráficas y procesadores" },
+      { nombre: "Audio", descripcion: "Dispositivos de audio como auriculares y altavoces" },
+      { nombre: "Cámaras", descripcion: "Cámaras web y otros dispositivos de captura de video" }
+    ]);
+
+db.productos.insertMany([
+      { nombre: "Laptop", descripcion: "Laptop de alta gama", precio: 1200.00, stock: 10, categoria_id: 1 },
+      { nombre: "Mouse", descripcion: "Mouse inalámbrico", precio: 25.00, stock: 50, categoria_id: 2 },
+      { nombre: "Teclado", descripcion: "Teclado mecánico", precio: 75.00, stock: 30, categoria_id: 2 },
+      { nombre: "Monitor", descripcion: "Monitor 24 pulgadas", precio: 200.00, stock: 20, categoria_id: 3 },
+      { nombre: "Impresora", descripcion: "Impresora multifunción", precio: 150.00, stock: 15, categoria_id: 4 },
+      { nombre: "Disco Duro", descripcion: "Disco duro externo 1TB", precio: 80.00, stock: 40, categoria_id: 5 },
+      { nombre: "Memoria USB", descripcion: "Memoria USB 64GB", precio: 20.00, stock: 100, categoria_id: 5 },
+      { nombre: "Tarjeta Gráfica", descripcion: "Tarjeta gráfica de última generación", precio: 500.00, stock: 5, categoria_id: 6 },
+      { nombre: "Auriculares", descripcion: "Auriculares con micrófono", precio: 45.00, stock: 25, categoria_id: 7 },
+      { nombre: "Cámara Web", descripcion: "Cámara web HD", precio: 60.00, stock: 10, categoria_id: 8 }
+    ])
+
+db.pedidos.insertMany([
+  {
+    "pedido_id": 1,
+    "usuario_id": 1,
+    "observacion": "Entrega rápida",
+    "estado": "pendiente",
+    "fecha_pedido": new Date("2023-10-01T10:00:00Z")
+  },
+  {
+    "pedido_id": 2,
+    "usuario_id": 2,
+    "observacion": "Regalo de cumpleaños",
+    "estado": "completada",
+    "fecha_pedido": new Date("2023-10-02T15:30:00Z")
+  }
+])
+
+db.detalle_pedidos.insertMany([
+  {
+    "detalle_pedidos_id": 1,
+    "pedido_id": 1,
+    "producto_id": 1,
+    "cantidad": 1
+  },
+  {
+    "detalle_pedidos_id": 2,
+    "pedido_id": 1,
+    "producto_id": 2,
+    "cantidad": 2
+  },
+  {
+    "detalle_pedidos_id": 3,
+    "pedido_id": 2,
+    "producto_id": 3,
+    "cantidad": 1
+  },
+  {
+    "detalle_pedidos_id": 4,
+    "pedido_id": 2,
+    "producto_id": 4,
+    "cantidad": 1
+  }
+])

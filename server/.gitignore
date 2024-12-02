@@ -1,0 +1,26 @@
+# Dependencias
+node_modules/
+
+# Archivos de prueba
+/coverage
+
+# Archivos de producción
+/build
+
+# Archivos temporales
+.cache
+/tmp
+
+# Archivos específicos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración del editor
+.idea/
+.vscode/
+
+# Archivos de configuración del entorno (¡IMPORTANTE!)
+.env
+.env.local
+.env.development.local
+.env
