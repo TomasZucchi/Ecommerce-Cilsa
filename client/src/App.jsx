@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import NavbarComponent from "./components/NavBar/NavBar";
 import Hero from "./components/Carousel/Carousel";
-import ProductList from "./components/ProductList/ProductList";
 import Footer from "./components/Footer/Footer";
-import Modal from "./components/Modal/Modal";
+import Modal from "react-bootstrap/Modal";
 import LoginForm from "./components/Forms/LoginForm";
 import RegisterForm from "./components/Forms/RegisterForm";
 
@@ -25,28 +24,33 @@ function App() {
 
   return (
     <>
-      <NavbarComponent openLoginModal={openLoginModal} />
+      <NavbarComponent
+        openLoginModal={openLoginModal}
+        openRegisterModal={openRegisterModal}
+      />
       <main>
         <Hero />
       </main>
       <Footer />
 
       {/* Modal para Iniciar Sesión */}
-      <Modal
-        show={isLoginModalOpen}
-        onClose={closeLoginModal}
-        title="Iniciar Sesión"
-      >
-        <LoginForm onRegister={openRegisterModal} />
+      <Modal show={isLoginModalOpen} onHide={closeLoginModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Iniciar Sesión</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <LoginForm onClose={closeLoginModal} onRegister={openRegisterModal} />
+        </Modal.Body>
       </Modal>
 
       {/* Modal para Registrarse */}
-      <Modal
-        show={isRegisterModalOpen}
-        onClose={closeRegisterModal}
-        title="Registrarse"
-      >
-        <RegisterForm onLogin={openLoginModal} />
+      <Modal show={isRegisterModalOpen} onHide={closeRegisterModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Registrarse</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <RegisterForm onClose={closeRegisterModal} onLogin={openLoginModal} />
+        </Modal.Body>
       </Modal>
     </>
   );

@@ -9,6 +9,7 @@ import {
   Button,
 } from "react-bootstrap";
 import logo from "../../assets/logo_w.png"; // Importa la imagen
+import { FaShoppingCart } from "react-icons/fa";
 
 const NavbarComponent = ({ openLoginModal }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -65,6 +66,11 @@ const NavbarComponent = ({ openLoginModal }) => {
                 Ingresar
               </button>
             </Nav>
+          </Nav>
+          <Nav>
+            <Nav.Link href="#cart">
+              <FaShoppingCart size={20} />
+            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

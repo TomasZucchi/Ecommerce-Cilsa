@@ -39,14 +39,6 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    // Verificar si el nombre de usuario ya existe
-    const existingUserByName = await UserModel.findOne({ nombre });
-    if (existingUserByName) {
-      return res.status(UserErrors.USERNAME_EXISTS.statusCode).json({
-        message: UserErrors.USERNAME_EXISTS.message,
-      });
-    }
-
     // Verificar si el correo electrónico ya existe
     const existingUserByEmail = await UserModel.findOne({ email });
     if (existingUserByEmail) {
