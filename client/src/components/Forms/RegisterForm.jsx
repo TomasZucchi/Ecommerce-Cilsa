@@ -5,6 +5,7 @@ import password_icon from "../../assets/password.png";
 
 function RegisterForm({ onClose, onLogin }) {
   const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -16,7 +17,7 @@ function RegisterForm({ onClose, onLogin }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ nombre, email, password }),
+        body: JSON.stringify({ nombre, apellido, email, password }),
       });
 
       if (response.ok) {
@@ -51,6 +52,25 @@ function RegisterForm({ onClose, onLogin }) {
             required
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className="mb-3">
+        <label htmlFor="apellido" className="form-label">
+          Apellido
+        </label>
+        <div className="input-group">
+          <span className="input-group-text">
+            <img src={user_icon} alt="User Icon" width="20" height="20" />
+          </span>
+          <input
+            type="text"
+            className="form-control"
+            id="apellido"
+            placeholder="Apellido"
+            required
+            value={apellido}
+            onChange={(e) => setApellido(e.target.value)}
           />
         </div>
       </div>

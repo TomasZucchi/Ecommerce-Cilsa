@@ -1,9 +1,8 @@
-// LoginForm.jsx
 import React, { useState } from "react";
 import password_icon from "../../assets/password.png";
 import email_icon from "../../assets/email.png";
 
-function LoginForm({ onClose, onRegister }) {
+function LoginForm({ onClose, onRegister, onSuccess, onError }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -21,16 +20,15 @@ function LoginForm({ onClose, onRegister }) {
       if (response.ok) {
         const data = await response.json();
         console.log("Login successful:", data);
-        onClose(); // Cerrar modal al iniciar sesión correctamente
-        alert("Inicio de sesión exitoso"); // Mostrar mensaje de éxito
+        onSuccess(data.nombre); // Pasar el nombre del usuario a la función de éxito
       } else {
         const errorData = await response.json();
         console.error("Login failed:", errorData);
-        alert("Error en el inicio de sesión: " + errorData.message); // Manejar el error
+        onError("Error en el inicio de sesión: " + errorData.message); // Manejar el error
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Error de conexión: " + error.message); // Manejar errores de red
+      onError("Error de conexión: " + error.message); // Manejar errores de red
     }
   };
 
