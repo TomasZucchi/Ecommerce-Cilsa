@@ -1,12 +1,10 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
+import './Footer.css'; // Asegúrate de que el archivo CSS esté importado
 
 const Footer = () => {
   return (
-    <footer
-      className="bg-light text-center text-lg-start fixed-bottom mb-5"
-      id="contacto"
-    >
+    <footer id="contacto" className="bg-light text-center text-lg-start">
       <div className="container p-4">
         <div className="row">
           <div className="col-lg-8 col-md-6 mb-4 mb-md-0">
@@ -38,7 +36,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
-      <div className="text-center p-3 bg-dark text-light fixed-bottom">
+      <div className="text-center p-3 bg-dark text-light">
         © 2024 PC Hard. Todos los derechos reservados.
       </div>
     </footer>

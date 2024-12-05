@@ -9,13 +9,17 @@ const Products = ({ products }) => {
       <Row className="gx-4">
         {products.map((product) => (
           <Col key={product._id} sm={12} md={6} lg={3} className="mb-4">
-            {/* Aplica estilos personalizados para hacer las tarjetas más pequeñas */}
             <Card style={{ width: "15rem", height: "24rem" }}>
               <Card.Img
                 variant="top"
-                src={product.image || "https://via.placeholder.com/150"}
+                src={product.imagen_url || "https://via.placeholder.com/150"} // Usar `imagen_url`
                 alt={product.nombre}
-                style={{ height: "8rem", objectFit: "cover" }} // Ajusta la altura de la imagen
+                style={{
+                  height: "8.2rem", // Reduce la altura
+                  width: "auto", // Permite que se ajuste automáticamente al ancho
+                  objectFit: "contain", // Asegura que la imagen se mantenga completa dentro del área
+                  padding: "0.5rem", // Añade algo de espacio alrededor
+                }}
               />
               <Card.Body>
                 <Card.Title style={{ fontSize: "1rem" }}>{product.nombre}</Card.Title>
