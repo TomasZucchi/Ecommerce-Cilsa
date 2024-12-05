@@ -3,50 +3,114 @@ import NavbarComponent from "./components/NavBar/NavBar";
 import Hero from "./components/Carousel/Carousel";
 import ProductList from "./components/ProductList/ProductList";
 import Footer from "./components/Footer/Footer";
-import Modal from "./components/Modal/Modal";
+import Modal from "react-bootstrap/Modal";
 import LoginForm from "./components/Forms/LoginForm";
 import RegisterForm from "./components/Forms/RegisterForm";
+import SuccessModal from "./components/Modal/Success";
+import ErrorModal from "./components/Modal/Error";
+import axios from "axios"; // Asegúrate de importar axios
 
 function App() {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState("login");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [userName, setUserName] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); // Estado para manejar la búsqueda
+  const [products, setProducts] = useState([]); // Estado para almacenar productos
 
   const openLoginModal = () => {
-    setIsRegisterModalOpen(false);
-    setIsLoginModalOpen(true);
+    setModalContent("login");
+    setIsModalOpen(true);
   };
-  const closeLoginModal = () => setIsLoginModalOpen(false);
 
   const openRegisterModal = () => {
-    setIsLoginModalOpen(false);
-    setIsRegisterModalOpen(true);
+    setModalContent("register");
+    setIsModalOpen(true);
   };
-  const closeRegisterModal = () => setIsRegisterModalOpen(false);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleLoginSuccess = (name) => {
+    setUserName(name);
+    setModalContent("success");
+  };
+
+  const handleRegisterSuccess = (name) => {
+    setUserName(name);
+    setModalContent("success");
+  };
+
+  const handleError = (message) => {
+    setErrorMessage(message);
+    setModalContent("error");
+  };
+
+  const handleSearchQueryChange = (query) => {
+    console.log("Búsqueda actualizada:", query); // Puedes actualizar el estado o lógica aquí
+    setSearchQuery(query);
+  };
+
+  // Función para manejar la selección de una categoría
+  const handleCategoryClick = async (categoryId) => {
+    try {
+      const response = await axios.get(`http://localhost:3001/api/categorias/${categoryId}/productos`);
+      setProducts(response.data); // Actualiza los productos con la respuesta de la API
+    } catch (error) {
+      console.error("Error al obtener productos por categoría:", error);
+    }
+  };
 
   return (
     <>
-      <NavbarComponent openLoginModal={openLoginModal} />
+      <NavbarComponent
+        openLoginModal={openLoginModal}
+        onCategoryClick={handleCategoryClick} // Pasamos la función de manejar categorías
+        onShowAllProducts={() => console.log("Mostrando todos los productos")}
+        onSearchQueryChange={handleSearchQueryChange} // Pasamos la función de búsqueda
+      />
       <main>
         <Hero />
+        <ProductList filter="" searchQuery={searchQuery} products={products} /> {/* Pasamos los productos al ProductList */}
       </main>
       <Footer />
 
-      {/* Modal para Iniciar Sesión */}
-      <Modal
-        show={isLoginModalOpen}
-        onClose={closeLoginModal}
-        title="Iniciar Sesión"
-      >
-        <LoginForm onRegister={openRegisterModal} />
-      </Modal>
-
-      {/* Modal para Registrarse */}
-      <Modal
-        show={isRegisterModalOpen}
-        onClose={closeRegisterModal}
-        title="Registrarse"
-      >
-        <RegisterForm onLogin={openLoginModal} />
+      <Modal show={isModalOpen} onHide={closeModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {modalContent === "login" && "Iniciar Sesión"}
+            {modalContent === "register" && "Registrarse"}
+            {modalContent === "success" && `Bienvenido, ${userName}`}
+            {modalContent === "error" && "Error"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {modalContent === "login" && (
+            <LoginForm
+              onClose={closeModal}
+              onRegister={openRegisterModal}
+              onSuccess={handleLoginSuccess}
+              onError={handleError}
+            />
+          )}
+          {modalContent === "register" && (
+            <RegisterForm
+              onClose={closeModal}
+              onSuccess={handleRegisterSuccess}
+              onError={handleError}
+            />
+          )}
+          {modalContent === "success" && (
+            <SuccessModal
+              message={`Bienvenido, ${userName}`}
+              onClose={closeModal}
+            />
+          )}
+          {modalContent === "error" && (
+            <ErrorModal message={errorMessage} onClose={closeModal} />
+          )}
+        </Modal.Body>
       </Modal>
     </>
   );

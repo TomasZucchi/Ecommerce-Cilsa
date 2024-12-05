@@ -1,35 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { Card, CardGroup, Container } from "react-bootstrap";
-import axios from "axios";
+import React from "react";
+import { Card, Row, Col, Container, Button } from "react-bootstrap";
 
-const Products = () => {
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    // Reemplaza 'URL_DE_TU_API' con la URL de tu API
-    axios
-      .get("URL_DE_TU_API")
-      .then((response) => {
-        setProducts(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching products:", error);
-      });
-  }, []);
-
+const Products = ({ products }) => {
   return (
-    <Container>
-      <CardGroup>
+    <Container id="productos">
+      <h1 className="my-4">Nuestros Productos</h1>
+      {/* Ajusta el espaciado horizontal entre columnas */}
+      <Row className="gx-4">
         {products.map((product) => (
-          <Card key={product.id} style={{ width: "18rem" }}>
-            <Card.Img variant="top" src={product.image} />
-            <Card.Body>
-              <Card.Title>{product.name}</Card.Title>
-              <Card.Text>{product.description}</Card.Text>
-            </Card.Body>
-          </Card>
+          <Col key={product._id} sm={12} md={6} lg={3} className="mb-4">
+            {/* Aplica estilos personalizados para hacer las tarjetas más pequeñas */}
+            <Card style={{ width: "15rem", height: "24rem" }}>
+              <Card.Img
+                variant="top"
+                src={product.image || "https://via.placeholder.com/150"}
+                alt={product.nombre}
+                style={{ height: "8rem", objectFit: "cover" }} // Ajusta la altura de la imagen
+              />
+              <Card.Body>
+                <Card.Title style={{ fontSize: "1rem" }}>{product.nombre}</Card.Title>
+                <Card.Text style={{ fontSize: "0.9rem", height: "4rem", overflow: "hidden" }}>
+                  {product.descripcion}
+                </Card.Text>
+                <Card.Text>
+                  <strong style={{ fontSize: "0.9rem" }}>Precio: ${product.precio}</strong>
+                </Card.Text>
+                <Card.Text style={{ fontSize: "0.8rem" }}>Stock: {product.stock}</Card.Text>
+                <Button variant="primary" size="sm">
+                  Agregar al carrito
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
         ))}
-      </CardGroup>
+      </Row>
     </Container>
   );
 };

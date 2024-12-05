@@ -8,10 +8,10 @@ const router = Router();
 
 router.post("/register", async (req, res) => {
   try {
-    const { nombre, email, password } = req.body;
+    const { nombre, apellido, email, password } = req.body;
 
     // Validación manual
-    if (!nombre || !email || !password) {
+    if (!nombre || !apellido || !email || !password) {
       return res.status(UserErrors.MISSING_FIELDS.statusCode).json({
         message: UserErrors.MISSING_FIELDS.message,
       });
@@ -22,8 +22,18 @@ router.post("/register", async (req, res) => {
       nombre.length > 20 ||
       !/^[a-zA-Z0-9]+$/.test(nombre)
     ) {
-      return res.status(UserErrors.INVALID_USERNAME.statusCode).json({
-        message: UserErrors.INVALID_USERNAME.message,
+      return res.status(UserErrors.INVALID_NAME.statusCode).json({
+        message: UserErrors.INVALID_NAME.message,
+      });
+    }
+
+    if (
+      apellido.length < 3 ||
+      apellido.length > 20 ||
+      !/^[a-zA-Z0-9]+$/.test(apellido)
+    ) {
+      return res.status(UserErrors.INVALID_LASTNAME.statusCode).json({
+        message: UserErrors.INVALID_LASTNAME.message,
       });
     }
 
@@ -39,14 +49,6 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    // Verificar si el nombre de usuario ya existe
-    const existingUserByName = await UserModel.findOne({ nombre });
-    if (existingUserByName) {
-      return res.status(UserErrors.USERNAME_EXISTS.statusCode).json({
-        message: UserErrors.USERNAME_EXISTS.message,
-      });
-    }
-
     // Verificar si el correo electrónico ya existe
     const existingUserByEmail = await UserModel.findOne({ email });
     if (existingUserByEmail) {
@@ -57,7 +59,12 @@ router.post("/register", async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new UserModel({ nombre, email, password: hashedPassword });
+    const newUser = new UserModel({
+      nombre,
+      apellido,
+      email,
+      password: hashedPassword,
+    });
     await newUser.save();
 
     res.status(201).json(newUser);

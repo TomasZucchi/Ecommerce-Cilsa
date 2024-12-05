@@ -1,41 +1,60 @@
-import React, { useState, useEffect } from "react";
-import { Card, Button, Row, Col, Container } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Products from "../Products/Products";
 
-const ProductList = () => {
+const ProductList = ({ filter, searchQuery }) => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Solicitar productos con filtro de categoría (si se pasa un filtro)
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/products");
-        const data = await response.json();
-        setProducts(data);
+        let url = "http://localhost:3001/api/productos"; // URL base
+
+        // Si hay filtro de categoría, agregarlo a la URL
+        if (filter) {
+          url = `${url}?categoria=${filter}`;
+        }
+
+        const response = await axios.get(url);
+        setProducts(response.data);
+        setLoading(false);
       } catch (error) {
         console.error("Error al obtener los productos:", error);
+        setLoading(false);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [filter]); // Se vuelve a hacer la solicitud solo cuando el filtro cambia
+
+  useEffect(() => {
+    let filtered = products;
+
+    // Filtro por nombre (búsqueda)
+    if (searchQuery.trim()) {
+      filtered = filtered.filter((product) =>
+        product.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    setFilteredProducts(filtered);
+  }, [searchQuery, products]); // Vuelve a aplicar los filtros cuando cambia la búsqueda o los productos
+
+  if (loading) {
+    return <p>Cargando productos...</p>;
+  }
 
   return (
-    <Container className="mt-4">
-      <h1 className="text-center mb-4">Nuestros Productos</h1>
-      <Row>
-        {products.map((product) => (
-          <Col md={4} sm={6} xs={12} key={product.id} className="mb-4">
-            <Card>
-              <Card.Img variant="top" src={product.image} alt={product.name} />
-              <Card.Body>
-                <Card.Title>{product.name}</Card.Title>
-                <Card.Text>Precio: ${product.price}</Card.Text>
-                <Button variant="primary">Agregar al carrito</Button>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-    </Container>
+    <div className="container">
+      {filteredProducts.length > 0 ? (
+        <Products products={filteredProducts} />
+      ) : (
+        <p>No se encontraron productos</p>
+      )}
+    </div>
   );
 };
 

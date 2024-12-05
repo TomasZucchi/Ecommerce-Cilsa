@@ -1,11 +1,39 @@
-import React from "react";
-import user_icon from "../../assets/person.png";
+import React, { useState } from "react";
 import password_icon from "../../assets/password.png";
 import email_icon from "../../assets/email.png";
 
-function LoginForm({ onRegister }) {
+function LoginForm({ onClose, onRegister, onSuccess, onError }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:3001/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Login successful:", data);
+        onSuccess(data.nombre); // Pasar el nombre del usuario a la función de éxito
+      } else {
+        const errorData = await response.json();
+        console.error("Login failed:", errorData);
+        onError("Error en el inicio de sesión: " + errorData.message); // Manejar el error
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      onError("Error de conexión: " + error.message); // Manejar errores de red
+    }
+  };
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div className="mb-3">
         <label htmlFor="email" className="form-label">
           Email
@@ -20,6 +48,8 @@ function LoginForm({ onRegister }) {
             id="email"
             placeholder="Correo electrónico"
             required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
       </div>
@@ -42,6 +72,8 @@ function LoginForm({ onRegister }) {
             id="password"
             placeholder="Contraseña"
             required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
       </div>
@@ -49,11 +81,7 @@ function LoginForm({ onRegister }) {
         <button type="submit" className="btn btn-primary">
           Ingresar
         </button>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={onRegister} // Llama a la función para abrir el modal de registro
-        >
+        <button type="button" className="btn btn-primary" onClick={onRegister}>
           Registrarse
         </button>
       </div>

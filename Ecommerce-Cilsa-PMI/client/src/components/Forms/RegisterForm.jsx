@@ -1,13 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import user_icon from "../../assets/person.png";
 import email_icon from "../../assets/email.png";
 import password_icon from "../../assets/password.png";
 
-function RegisterForm({ onLogin }) {
+function RegisterForm({ onClose, onLogin }) {
+  const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:3001/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ nombre, apellido, email, password }),
+      });
+
+      if (response.ok) {
+        alert("Registro exitoso. Ahora puedes iniciar sesión.");
+        onClose(); // Cerrar el modal de registro
+      } else {
+        const errorData = await response.json();
+        console.error("Register failed:", errorData);
+        alert("Error al registrarse: " + errorData.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Ocurrió un error, intenta nuevamente.");
+    }
+  };
+
   return (
-    <form>
+    <form onSubmit={handleRegister}>
       <div className="mb-3">
-        <label htmlFor="name" className="form-label">
+        <label htmlFor="nombre" className="form-label">
           Nombre
         </label>
         <div className="input-group">
@@ -17,9 +47,30 @@ function RegisterForm({ onLogin }) {
           <input
             type="text"
             className="form-control"
-            id="name"
+            id="nombre"
             placeholder="Nombre completo"
             required
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className="mb-3">
+        <label htmlFor="apellido" className="form-label">
+          Apellido
+        </label>
+        <div className="input-group">
+          <span className="input-group-text">
+            <img src={user_icon} alt="User Icon" width="20" height="20" />
+          </span>
+          <input
+            type="text"
+            className="form-control"
+            id="apellido"
+            placeholder="Apellido"
+            required
+            value={apellido}
+            onChange={(e) => setApellido(e.target.value)}
           />
         </div>
       </div>
@@ -37,6 +88,8 @@ function RegisterForm({ onLogin }) {
             id="email"
             placeholder="Correo electrónico"
             required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
       </div>
@@ -59,9 +112,12 @@ function RegisterForm({ onLogin }) {
             id="password"
             placeholder="Contraseña"
             required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
       </div>
+
       <div className="d-flex justify-content-between">
         <button type="submit" className="btn btn-primary">
           Registrar
