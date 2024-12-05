@@ -33,6 +33,8 @@ db.productos.insertMany([
       { nombre: "Cámara Web", descripcion: "Cámara web HD", precio: 60.00, stock: 10, categoria_id: 8 }
     ])
 
+
+
 db.pedidos.insertMany([
   {
     "pedido_id": 1,

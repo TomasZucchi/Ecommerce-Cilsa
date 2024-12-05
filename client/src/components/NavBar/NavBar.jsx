@@ -11,7 +11,7 @@ import {
 import logo from "../../assets/logo_w.png"; // Importa la imagen
 import { FaShoppingCart } from "react-icons/fa";
 
-const NavbarComponent = ({ openLoginModal }) => {
+const NavbarComponent = ({ openLoginModal, openDetalleCarrito }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearchChange = (e) => {
@@ -68,7 +68,7 @@ const NavbarComponent = ({ openLoginModal }) => {
             </Nav>
           </Nav>
           <Nav>
-            <Nav.Link href="#cart">
+            <Nav.Link onClick={openDetalleCarrito}>
               <FaShoppingCart size={20} />
             </Nav.Link>
           </Nav>

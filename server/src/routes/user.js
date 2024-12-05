@@ -6,6 +6,11 @@ const { UserErrors } = require("../error");
 
 const router = Router();
 
+// Función para capitalizar la primera letra de una cadena
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+};
+
 router.post("/register", async (req, res) => {
   try {
     const { nombre, apellido, email, password } = req.body;
@@ -101,7 +106,12 @@ router.post("/login", async (req, res) => {
       });
     }
     const token = jwt.sign({ id: user._id }, "secret", { expiresIn: "1h" });
-    res.json({ message: "Inicio de sesión exitoso", token, userID: user._id });
+    res.json({
+      message: "Inicio de sesión exitoso. Bienvenido ",
+      nombre: capitalizeFirstLetter(user.nombre),
+      token,
+      userID: user._id,
+    });
   } catch (err) {
     res.status(UserErrors.SERVER_ERROR.statusCode).json({
       error: UserErrors.SERVER_ERROR.message,

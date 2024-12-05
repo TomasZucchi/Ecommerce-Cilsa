@@ -7,27 +7,49 @@ import LoginForm from "./components/Forms/LoginForm";
 import RegisterForm from "./components/Forms/RegisterForm";
 import SuccessModal from "./components/Modal/Success";
 import ErrorModal from "./components/Modal/Error";
+import DetalleCarrito from "./components/Carrito/Carrito";
 
 function App() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isDetalleCarritoOpen, setIsDetalleCarritoOpen] = useState(false);
   const [modalContent, setModalContent] = useState("login"); // "login", "register", "success", "error"
   const [errorMessage, setErrorMessage] = useState("");
   const [userName, setUserName] = useState(""); // Estado para almacenar el nombre del usuario
+  const [formData, setFormData] = useState({
+    nombre: "",
+    apellido: "",
+    email: "",
+    password: "",
+  });
+  const [pedidos, setPedidos] = useState([]); // Estado para almacenar los pedidos
 
   const openLoginModal = () => {
     setIsRegisterModalOpen(false);
     setIsLoginModalOpen(true);
     setModalContent("login");
   };
-  const closeLoginModal = () => setIsLoginModalOpen(false);
+  const closeLoginModal = () => {
+    setIsLoginModalOpen(false);
+    setIsRegisterModalOpen(false);
+  };
 
   const openRegisterModal = () => {
     setIsLoginModalOpen(false);
     setIsRegisterModalOpen(true);
     setModalContent("register");
   };
-  const closeRegisterModal = () => setIsRegisterModalOpen(false);
+  const closeRegisterModal = () => {
+    setIsLoginModalOpen(false);
+    setIsRegisterModalOpen(false);
+  };
+
+  const openDetalleCarrito = () => {
+    setIsDetalleCarritoOpen(true);
+  };
+  const closeDetalleCarrito = () => {
+    setIsDetalleCarritoOpen(false);
+  };
 
   const handleLoginSuccess = (name) => {
     setUserName(name);
@@ -37,6 +59,7 @@ function App() {
   const handleRegisterSuccess = (name) => {
     setUserName(name);
     setModalContent("success");
+    openLoginModal(); // Abrir el modal de inicio de sesión después de un registro exitoso
   };
 
   const handleError = (message) => {
@@ -44,11 +67,16 @@ function App() {
     setModalContent("error");
   };
 
+  const handleRetry = () => {
+    setModalContent("register");
+  };
+
   return (
     <>
       <NavbarComponent
         openLoginModal={openLoginModal}
         openRegisterModal={openRegisterModal}
+        openDetalleCarrito={openDetalleCarrito}
       />
       <main>
         <Hero />
@@ -81,20 +109,50 @@ function App() {
           {modalContent === "register" && (
             <RegisterForm
               onClose={closeRegisterModal}
+              onLogin={openLoginModal}
               onSuccess={handleRegisterSuccess}
               onError={handleError}
+              formData={formData}
+              setFormData={setFormData}
             />
           )}
           {modalContent === "success" && (
             <SuccessModal
-              message={`Bienvenido, ${userName}`}
+              message="Ha iniciado sesión correctamente"
               onClose={closeLoginModal}
             />
           )}
           {modalContent === "error" && (
-            <ErrorModal message={errorMessage} onClose={closeLoginModal} />
+            <ErrorModal
+              message={errorMessage}
+              onClose={closeLoginModal}
+              onRetry={handleRetry}
+            />
           )}
         </Modal.Body>
+      </Modal>
+
+      {/* Modal para Detalle de Carrito */}
+      <Modal show={isDetalleCarritoOpen} onHide={closeDetalleCarrito} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Detalle del Carrito</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {pedidos.length > 0 ? (
+            <ul>
+              {pedidos.map((pedido, index) => (
+                <li key={index}>{pedido}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>No hay pedidos en el carrito.</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <button className="btn btn-secondary" onClick={closeDetalleCarrito}>
+            Cerrar
+          </button>
+        </Modal.Footer>
       </Modal>
     </>
   );
