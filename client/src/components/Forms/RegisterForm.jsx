@@ -1,13 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import user_icon from "../../assets/person.png";
 import email_icon from "../../assets/email.png";
 import password_icon from "../../assets/password.png";
 
-function RegisterForm({ onClose, onLogin }) {
-  const [nombre, setNombre] = useState("");
-  const [apellido, setApellido] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+function RegisterForm({
+  onClose,
+  onSuccess,
+  onError,
+  onLogin,
+  formData,
+  setFormData,
+}) {
+  const [nombre, setNombre] = useState(formData.nombre);
+  const [apellido, setApellido] = useState(formData.apellido);
+  const [email, setEmail] = useState(formData.email);
+  const [password, setPassword] = useState(formData.password);
+
+  useEffect(() => {
+    setFormData({ nombre, apellido, email, password });
+  }, [nombre, apellido, email, password, setFormData]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -17,20 +28,21 @@ function RegisterForm({ onClose, onLogin }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ nombre, apellido, email, password }),
+        body: JSON.stringify({ nombre, apellido, email, password }), // Incluir apellido
       });
 
       if (response.ok) {
-        alert("Registro exitoso. Ahora puedes iniciar sesión.");
+        const data = await response.json();
+        onSuccess(`${data.nombre} ${data.apellido}`); // Pasar nombre completo a la función de éxito
         onClose(); // Cerrar el modal de registro
       } else {
         const errorData = await response.json();
         console.error("Register failed:", errorData);
-        alert("Error al registrarse: " + errorData.message);
+        onError("Error al registrarse:\n" + errorData.message); // Manejar el error
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Ocurrió un error, intenta nuevamente.");
+      onError("Ocurrió un error, intenta nuevamente."); // Manejar errores de red
     }
   };
 
@@ -117,7 +129,6 @@ function RegisterForm({ onClose, onLogin }) {
           />
         </div>
       </div>
-
       <div className="d-flex justify-content-between">
         <button type="submit" className="btn btn-primary">
           Registrar

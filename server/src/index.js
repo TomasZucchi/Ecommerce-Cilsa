@@ -6,6 +6,7 @@ const userRouter = require("./routes/user");
 const productRouter = require("./routes/product");
 const categoryRouter = require("./routes/categorias"); // Ruta de categorías
 const { ProductModel } = require("./models/product");
+const detallePedidoRouter = require("./routes/DetallePedido");
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ mongoose
 app.use("/api", userRouter); // Rutas de usuarios
 app.use("/api", productRouter); // Rutas de productos
 app.use("/api/categorias", categoryRouter); // Rutas de categorías
+app.use("/api", detallePedidoRouter);
 
 // Ruta de depuración (opcional)
 app.get("/debug/products", async (req, res) => {
