@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { UserContext } from "../../UserContext";
 import password_icon from "../../assets/password.png";
 import email_icon from "../../assets/email.png";
 
 function LoginForm({ onClose, onRegister, onSuccess, onError }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { setUser } = useContext(UserContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,6 +22,7 @@ function LoginForm({ onClose, onRegister, onSuccess, onError }) {
       if (response.ok) {
         const data = await response.json();
         console.log("Login successful:", data);
+        setUser(data); // Guardar la información del usuario en el contexto
         onSuccess(data.nombre); // Pasar el nombre del usuario a la función de éxito
       } else {
         const errorData = await response.json();

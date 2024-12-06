@@ -1,7 +1,33 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Card, Row, Col, Container, Button } from "react-bootstrap";
+import axios from "axios";
+import { UserContext } from "../../UserContext";
 
 const Products = ({ products }) => {
+  const { user } = useContext(UserContext);
+
+  const handleAddToCart = async (productId) => {
+    if (!user) {
+      alert("Por favor inicia sesión para agregar productos al carrito.");
+      console.error("Usuario no autenticado");
+      return;
+    }
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/api/detalle_pedido",
+        {
+          idUsuario: user._id,
+          productos: [{ idProducto: productId, cantidad: 1 }],
+        }
+      );
+      console.log("Producto agregado al carrito:", response.data);
+      alert("Producto agregado al carrito.");
+    } catch (error) {
+      console.error("Error al agregar el producto al carrito:", error);
+      alert("Error al agregar el producto al carrito.");
+    }
+  };
+
   return (
     <Container id="productos">
       <h1 className="my-4">Nuestros Productos</h1>
@@ -22,15 +48,31 @@ const Products = ({ products }) => {
                 }}
               />
               <Card.Body>
-                <Card.Title style={{ fontSize: "1rem" }}>{product.nombre}</Card.Title>
-                <Card.Text style={{ fontSize: "0.9rem", height: "4rem", overflow: "hidden" }}>
+                <Card.Title style={{ fontSize: "1rem" }}>
+                  {product.nombre}
+                </Card.Title>
+                <Card.Text
+                  style={{
+                    fontSize: "0.9rem",
+                    height: "4rem",
+                    overflow: "hidden",
+                  }}
+                >
                   {product.descripcion}
                 </Card.Text>
                 <Card.Text>
-                  <strong style={{ fontSize: "0.9rem" }}>Precio: ${product.precio}</strong>
+                  <strong style={{ fontSize: "0.9rem" }}>
+                    Precio: ${product.precio}
+                  </strong>
                 </Card.Text>
-                <Card.Text style={{ fontSize: "0.8rem" }}>Stock: {product.stock}</Card.Text>
-                <Button variant="primary" size="sm">
+                <Card.Text style={{ fontSize: "0.8rem" }}>
+                  Stock: {product.stock}
+                </Card.Text>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => handleAddToCart(product)}
+                >
                   Agregar al carrito
                 </Button>
               </Card.Body>
