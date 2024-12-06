@@ -25,6 +25,6 @@ const productSchema = new mongoose.Schema({
 });
 
 // Especificamos el nombre de la colección explícitamente
-const ProductModel = mongoose.model("Product", productSchema, "productos");
+const Producto = mongoose.model("Producto", productSchema, "productos");
 
-module.exports = { ProductModel };
+module.exports = Producto;
