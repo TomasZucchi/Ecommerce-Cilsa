@@ -1,34 +1,19 @@
 import React from "react";
+import error from "../../assets/error.png"; // Asegúrate de ajustar la ruta según tu estructura de carpetas
 
-function Modal({ show, onClose, title, children }) {
-  if (!show) return null;
-
+function ErrorModal({ message, onRetry }) {
   return (
-    <div
-      className="modal fade show"
-      tabIndex="-1"
-      style={{ display: "block" }}
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title" id="exampleModalLabel">
-              {title}
-            </h5>
-            <button
-              type="button"
-              className="btn-close"
-              onClick={onClose}
-              aria-label="Close"
-            ></button>
-          </div>
-          <div className="modal-body">{children}</div>
-        </div>
+    <div className="d-flex flex-column align-items-center justify-content-center">
+      <img src={error} alt="Error" width="200" height="200" />
+      <br />
+      <p>{message}</p>
+      <div className="d-flex justify-content-end w-100">
+        <button className="btn btn-primary me-2" onClick={onRetry}>
+          Volver
+        </button>
       </div>
     </div>
   );
 }
 
-export default Modal;
+export default ErrorModal;

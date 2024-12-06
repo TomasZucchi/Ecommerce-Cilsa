@@ -1,18 +1,36 @@
 import React, { useState, useEffect } from "react";
-import { Navbar, Nav, NavDropdown, Container, Form, FormControl, Button } from "react-bootstrap";
+import {
+  Navbar,
+  Nav,
+  NavDropdown,
+  Container,
+  Form,
+  FormControl,
+  Button,
+} from "react-bootstrap";
 import axios from "axios";
 import logo from "../../assets/logo_w.png";
+import { FaShoppingCart } from "react-icons/fa";
 
-const NavbarComponent = ({ openLoginModal, onCategoryClick, onShowAllProducts, onSearchQueryChange, onProductsUpdate }) => {
+const NavbarComponent = ({
+  openLoginModal,
+  openDetalleCarrito,
+  onCategoryClick,
+  onShowAllProducts,
+  onSearchQueryChange,
+  onProductsUpdate,
+}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);  // Agregar estado para los productos
+  const [products, setProducts] = useState([]); // Agregar estado para los productos
 
   // Obtener categorías desde el backend
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/api/categorias");
+        const response = await axios.get(
+          "http://localhost:3001/api/categorias"
+        );
         setCategories(response.data); // Guarda las categorías obtenidas
       } catch (error) {
         console.error("Error al obtener categorías:", error);
@@ -35,8 +53,8 @@ const NavbarComponent = ({ openLoginModal, onCategoryClick, onShowAllProducts, o
   const handleCategorySelect = async (categoryId) => {
     console.log("Categoría seleccionada:", categoryId);
     try {
-      const response = await axios.get(`http://localhost:3001/api/productos`);  // Solicitar productos por categoría
-      setProducts(response.data);  // Almacenar productos obtenidos en el estado
+      const response = await axios.get(`http://localhost:3001/api/productos`); // Solicitar productos por categoría
+      setProducts(response.data); // Almacenar productos obtenidos en el estado
       if (typeof onProductsUpdate === "function") {
         onProductsUpdate(response.data); // Enviar los productos al componente padre
       }
@@ -87,10 +105,18 @@ const NavbarComponent = ({ openLoginModal, onCategoryClick, onShowAllProducts, o
                   </NavDropdown.Item>
                 ))}
               </NavDropdown>
-              <button className="nav-link btn btn-link" onClick={openLoginModal}>
+              <button
+                className="nav-link btn btn-link"
+                onClick={openLoginModal}
+              >
                 Ingresar
               </button>
             </Nav>
+          </Nav>
+          <Nav>
+            <Nav.Link onClick={openDetalleCarrito}>
+              <FaShoppingCart size={20} />
+            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
