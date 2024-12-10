@@ -6,14 +6,15 @@ const ProductList = ({ filter, searchQuery }) => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(""); // Estado para manejo de errores
 
   useEffect(() => {
-    // Solicitar productos con filtro de categoría (si se pasa un filtro)
     const fetchProducts = async () => {
+      setLoading(true);
+      setError(""); // Reseteamos el error antes de la nueva petición
       try {
         let url = "http://localhost:3001/api/productos"; // URL base
 
-        // Si hay filtro de categoría, agregarlo a la URL
         if (filter) {
           url = `${url}?categoria=${filter}`;
         }
@@ -22,7 +23,7 @@ const ProductList = ({ filter, searchQuery }) => {
         setProducts(response.data);
         setLoading(false);
       } catch (error) {
-        console.error("Error al obtener los productos:", error);
+        setError("Hubo un problema al cargar los productos.");
         setLoading(false);
       }
     };
@@ -33,7 +34,6 @@ const ProductList = ({ filter, searchQuery }) => {
   useEffect(() => {
     let filtered = products;
 
-    // Filtro por nombre (búsqueda)
     if (searchQuery.trim()) {
       filtered = filtered.filter((product) =>
         product.nombre.toLowerCase().includes(searchQuery.toLowerCase())
@@ -41,10 +41,23 @@ const ProductList = ({ filter, searchQuery }) => {
     }
 
     setFilteredProducts(filtered);
-  }, [searchQuery, products]); // Vuelve a aplicar los filtros cuando cambia la búsqueda o los productos
+  }, [searchQuery, products]);
 
   if (loading) {
-    return <p>Cargando productos...</p>;
+    return (
+      <div className="container">
+        <p>Cargando productos...</p>
+        {/* Aquí puedes agregar un spinner para mejorar la UX */}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container">
+        <p>{error}</p>
+      </div>
+    );
   }
 
   return (

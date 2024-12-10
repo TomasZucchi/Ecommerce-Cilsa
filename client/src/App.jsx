@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavbarComponent from "./components/NavBar/NavBar";
 import Hero from "./components/Carousel/Carousel";
 import ProductList from "./components/ProductList/ProductList";
@@ -8,7 +8,7 @@ import LoginForm from "./components/Forms/LoginForm";
 import RegisterForm from "./components/Forms/RegisterForm";
 import SuccessModal from "./components/Modal/Success";
 import ErrorModal from "./components/Modal/Error";
-import axios from "axios"; // Asegúrate de importar axios
+import axios from "axios";
 import DetalleCarrito from "./components/Carrito/Carrito";
 
 function App() {
@@ -24,37 +24,28 @@ function App() {
     email: "",
     password: "",
   });
-  const [searchQuery, setSearchQuery] = useState(""); // Estado para manejar la búsqueda
-  const [pedidos, setPedidos] = useState([]); // Estado para almacenar los pedidos
-  const [products, setProducts] = useState([]); // Estado para almacenar productos
+  const [searchQuery, setSearchQuery] = useState("");
+  const [pedidos, setPedidos] = useState([]);
+  const [products, setProducts] = useState([]);
 
-  const openLoginModal = () => {
-    setIsRegisterModalOpen(false);
-    setIsLoginModalOpen(true);
-    setModalContent("login");
-  };
+  useEffect(() => {
+    // Puedes cargar productos al inicio si lo necesitas
+    // Aquí un ejemplo de cómo obtener los productos desde la API si es necesario:
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:3001/api/productos");
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Error al obtener los productos", error);
+      }
+    };
+    fetchProducts();
+  }, []); // Este efecto se ejecuta solo una vez cuando se monta el componente
 
-  const closeLoginModal = () => {
-    setIsLoginModalOpen(false);
-    setIsRegisterModalOpen(false);
-  };
-
-  const openRegisterModal = () => {
-    setIsLoginModalOpen(false);
-    setIsRegisterModalOpen(true);
-    setModalContent("register");
-  };
-
-  const closeRegisterModal = () => {
-    setIsLoginModalOpen(false);
-    setIsRegisterModalOpen(false);
-  };
-
-  const openDetalleCarrito = () => {
-    setIsDetalleCarritoOpen(true);
-  };
-  const closeDetalleCarrito = () => {
-    setIsDetalleCarritoOpen(false);
+  const toggleModal = (modalType) => {
+    setIsLoginModalOpen(modalType === "login");
+    setIsRegisterModalOpen(modalType === "register");
+    setModalContent(modalType);
   };
 
   const handleLoginSuccess = (name) => {
@@ -65,7 +56,7 @@ function App() {
   const handleRegisterSuccess = (name) => {
     setUserName(name);
     setModalContent("success");
-    openLoginModal(); // Abrir el modal de inicio de sesión después de un registro exitoso
+    toggleModal("login");
   };
 
   const handleError = (message) => {
@@ -73,22 +64,16 @@ function App() {
     setModalContent("error");
   };
 
-  const handleRetry = () => {
-    setModalContent("register");
-  };
-
   const handleSearchQueryChange = (query) => {
-    console.log("Búsqueda actualizada:", query); // Puedes actualizar el estado o lógica aquí
     setSearchQuery(query);
   };
 
-  // Función para manejar la selección de una categoría
   const handleCategoryClick = async (categoryId) => {
     try {
       const response = await axios.get(
         `http://localhost:3001/api/categorias/${categoryId}/productos`
       );
-      setProducts(response.data); // Actualiza los productos con la respuesta de la API
+      setProducts(response.data);
     } catch (error) {
       console.error("Error al obtener productos por categoría:", error);
     }
@@ -97,12 +82,11 @@ function App() {
   return (
     <>
       <NavbarComponent
-        openLoginModal={openLoginModal}
-        openRegisterModal={openRegisterModal}
-        openDetalleCarrito={openDetalleCarrito}
-        onCategoryClick={handleCategoryClick} // Pasamos la función de manejar categorías
-        onShowAllProducts={() => console.log("Mostrando todos los productos")}
-        onSearchQueryChange={handleSearchQueryChange} // Pasamos la función de búsqueda
+        openLoginModal={() => toggleModal("login")}
+        openRegisterModal={() => toggleModal("register")}
+        openDetalleCarrito={() => setIsDetalleCarritoOpen(true)}
+        onCategoryClick={handleCategoryClick}
+        onSearchQueryChange={handleSearchQueryChange}
       />
       <main>
         <Hero />
@@ -110,15 +94,14 @@ function App() {
           filter=""
           searchQuery={searchQuery}
           products={products}
-        />{" "}
-        {/* Pasamos los productos al ProductList */}
+        />
       </main>
       <Footer />
 
       {/* Modal */}
       <Modal
         show={isLoginModalOpen || isRegisterModalOpen}
-        onHide={closeLoginModal}
+        onHide={() => toggleModal("")}
         centered
       >
         <Modal.Header closeButton>
@@ -132,16 +115,16 @@ function App() {
         <Modal.Body>
           {modalContent === "login" && (
             <LoginForm
-              onClose={closeLoginModal}
-              onRegister={openRegisterModal}
+              onClose={() => toggleModal("")}
+              onRegister={() => toggleModal("register")}
               onSuccess={handleLoginSuccess}
               onError={handleError}
             />
           )}
           {modalContent === "register" && (
             <RegisterForm
-              onClose={closeRegisterModal}
-              onLogin={openLoginModal}
+              onClose={() => toggleModal("")}
+              onLogin={() => toggleModal("login")}
               onSuccess={handleRegisterSuccess}
               onError={handleError}
               formData={formData}
@@ -151,21 +134,24 @@ function App() {
           {modalContent === "success" && (
             <SuccessModal
               message="Ha iniciado sesión correctamente"
-              onClose={closeLoginModal}
+              onClose={() => toggleModal("")}
             />
           )}
           {modalContent === "error" && (
             <ErrorModal
               message={errorMessage}
-              onClose={closeLoginModal}
-              onRetry={handleRetry}
+              onClose={() => toggleModal("")}
             />
           )}
         </Modal.Body>
       </Modal>
 
       {/* Modal para Detalle de Carrito */}
-      <Modal show={isDetalleCarritoOpen} onHide={closeDetalleCarrito} centered>
+      <Modal
+        show={isDetalleCarritoOpen}
+        onHide={() => setIsDetalleCarritoOpen(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Detalle del Carrito</Modal.Title>
         </Modal.Header>
@@ -181,7 +167,7 @@ function App() {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <button className="btn btn-secondary" onClick={closeDetalleCarrito}>
+          <button className="btn btn-secondary" onClick={() => setIsDetalleCarritoOpen(false)}>
             Cerrar
           </button>
         </Modal.Footer>

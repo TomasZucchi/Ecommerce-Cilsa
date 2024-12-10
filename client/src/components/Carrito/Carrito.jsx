@@ -1,7 +1,15 @@
 import React from "react";
 import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 
 function DetalleCarrito({ show, onHide, pedidos }) {
+  // Función para eliminar un producto del carrito
+  const eliminarDelCarrito = (idProducto) => {
+    // Filtrar el carrito para eliminar el producto seleccionado
+    const nuevosPedidos = pedidos.filter((pedido) => pedido._id !== idProducto);
+    onHide(nuevosPedidos); // Actualizar el carrito pasando los nuevos pedidos al modal
+  };
+
   return (
     <Modal show={show} onHide={onHide} centered>
       <Modal.Header closeButton>
@@ -10,8 +18,18 @@ function DetalleCarrito({ show, onHide, pedidos }) {
       <Modal.Body>
         {pedidos.length > 0 ? (
           <ul>
-            {pedidos.map((pedido, index) => (
-              <li key={index}>{pedido}</li>
+            {pedidos.map((pedido) => (
+              <li key={pedido._id}>
+                {pedido.nombre} - Cantidad: {pedido.cantidad} - Precio: ${pedido.precio * pedido.cantidad}
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => eliminarDelCarrito(pedido._id)}
+                  style={{ marginLeft: "10px" }}
+                >
+                  Eliminar
+                </Button>
+              </li>
             ))}
           </ul>
         ) : (
@@ -19,9 +37,9 @@ function DetalleCarrito({ show, onHide, pedidos }) {
         )}
       </Modal.Body>
       <Modal.Footer>
-        <button className="btn btn-secondary" onClick={onHide}>
+        <Button variant="secondary" onClick={onHide}>
           Cerrar
-        </button>
+        </Button>
       </Modal.Footer>
     </Modal>
   );
