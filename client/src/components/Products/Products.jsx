@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Card, Row, Col, Container, Button } from "react-bootstrap";
+import axios from "axios";
+import { UserContext } from "../../UserContext";
 
-const Products = ({ products, agregarAlCarrito }) => {
+const Products = ({ products }) => {
   return (
     <Container id="productos">
       <h1 className="my-4">Nuestros Productos</h1>
@@ -21,19 +23,28 @@ const Products = ({ products, agregarAlCarrito }) => {
                 }}
               />
               <Card.Body>
-                <Card.Title style={{ fontSize: "1rem" }}>{product.nombre}</Card.Title>
-                <Card.Text style={{ fontSize: "0.9rem", height: "4rem", overflow: "hidden" }}>
+                <Card.Title style={{ fontSize: "1rem" }}>
+                  {product.nombre}
+                </Card.Title>
+                <Card.Text
+                  style={{
+                    fontSize: "0.9rem",
+                    height: "4rem",
+                    overflow: "hidden",
+                  }}
+                >
                   {product.descripcion}
                 </Card.Text>
                 <Card.Text>
-                  <strong style={{ fontSize: "0.9rem" }}>Precio: ${product.precio}</strong>
+                  <strong style={{ fontSize: "0.9rem" }}>
+                    Precio: ${product.precio}
+                  </strong>
+                </Card.Text>
+                <Card.Text style={{ fontSize: "0.8rem" }}>
+                  Stock: {product.stock}
                 </Card.Text>
                 <Card.Text style={{ fontSize: "0.8rem" }}>Stock: {product.stock}</Card.Text>
-                <Button 
-                  variant="primary" 
-                  size="sm"
-                  onClick={() => agregarAlCarrito(product)} // Llamar a la función para agregar el producto al carrito
-                >
+                <Button variant="primary" size="sm">
                   Agregar al carrito
                 </Button>
               </Card.Body>
