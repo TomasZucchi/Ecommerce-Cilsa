@@ -30,24 +30,31 @@ const Products = ({ products }) => {
 
   return (
     <Container id="productos">
-      <h1 className="my-4">Nuestros Productos</h1>
-      <Row className="gx-4">
+      <h1 className="my-4 text-center">Nuestros Productos</h1>
+      <Row className="gx-4 justify-content-center">
         {products.map((product) => (
-          <Col key={product._id} sm={12} md={6} lg={3} className="mb-4">
+          <Col
+            key={product._id}
+            sm={12}
+            md={6}
+            lg={3}
+            className="mb-4 d-flex justify-content-center"
+          >
             <Card style={{ width: "15rem", height: "24rem" }}>
               <Card.Img
                 variant="top"
                 src={product.imagen_url || "https://via.placeholder.com/150"}
-                alt={product.nombre}
+                alt={`Imagen del producto ${product.nombre}`}
+                aria-label={`Imagen del producto ${product.nombre}`}
                 style={{
-                  height: "8.2rem", 
-                  width: "auto", 
-                  objectFit: "contain", 
+                  height: "8.2rem",
+                  width: "auto",
+                  objectFit: "contain",
                   padding: "0.5rem",
                 }}
               />
               <Card.Body>
-                <Card.Title style={{ fontSize: "1rem" }}>
+                <Card.Title style={{ fontSize: "1rem" }} aria-label={`Nombre: ${product.nombre}`}>
                   {product.nombre}
                 </Card.Title>
                 <Card.Text
@@ -56,21 +63,23 @@ const Products = ({ products }) => {
                     height: "4rem",
                     overflow: "hidden",
                   }}
+                  aria-label={`Descripción: ${product.descripcion}`}
                 >
                   {product.descripcion}
                 </Card.Text>
-                <Card.Text>
+                <Card.Text aria-label={`Precio: ${product.precio}`}>
                   <strong style={{ fontSize: "0.9rem" }}>
                     Precio: ${product.precio}
                   </strong>
                 </Card.Text>
-                <Card.Text style={{ fontSize: "0.8rem" }}>
+                <Card.Text style={{ fontSize: "0.8rem" }} aria-label={`Stock disponible: ${product.stock}`}>
                   Stock: {product.stock}
                 </Card.Text>
                 <Button
                   variant="primary"
                   size="sm"
-                  onClick={() => handleAddToCart(product)}
+                  onClick={() => handleAddToCart(product._id)}
+                  aria-label={`Agregar ${product.nombre} al carrito`}
                 >
                   Agregar al carrito
                 </Button>

@@ -28,21 +28,21 @@ function RegisterForm({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ nombre, apellido, email, password }), // Incluir apellido
+        body: JSON.stringify({ nombre, apellido, email, password }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        onSuccess(`${data.nombre} ${data.apellido}`); // Pasar nombre completo a la función de éxito
+        onSuccess(`${data.nombre} ${data.apellido}`);
         onClose(); // Cerrar el modal de registro
       } else {
         const errorData = await response.json();
         console.error("Register failed:", errorData);
-        onError("Error al registrarse:\n" + errorData.message); // Manejar el error
+        onError("Error al registrarse:\n" + errorData.message);
       }
     } catch (error) {
       console.error("Error:", error);
-      onError("Ocurrió un error, intenta nuevamente."); // Manejar errores de red
+      onError("Ocurrió un error, intenta nuevamente.");
     }
   };
 
@@ -53,8 +53,14 @@ function RegisterForm({
           Nombre
         </label>
         <div className="input-group">
-          <span className="input-group-text">
-            <img src={user_icon} alt="User Icon" width="20" height="20" />
+          <span className="input-group-text" aria-hidden="true">
+            <img
+              src={user_icon}
+              alt="Ícono de usuario"
+              width="20"
+              height="20"
+              aria-label="Ícono de usuario"
+            />
           </span>
           <input
             type="text"
@@ -64,6 +70,7 @@ function RegisterForm({
             required
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
+            aria-label="Introduce tu nombre completo"
           />
         </div>
       </div>
@@ -72,8 +79,14 @@ function RegisterForm({
           Apellido
         </label>
         <div className="input-group">
-          <span className="input-group-text">
-            <img src={user_icon} alt="User Icon" width="20" height="20" />
+          <span className="input-group-text" aria-hidden="true">
+            <img
+              src={user_icon}
+              alt="Ícono de usuario"
+              width="20"
+              height="20"
+              aria-label="Ícono de usuario"
+            />
           </span>
           <input
             type="text"
@@ -83,6 +96,7 @@ function RegisterForm({
             required
             value={apellido}
             onChange={(e) => setApellido(e.target.value)}
+            aria-label="Introduce tu apellido"
           />
         </div>
       </div>
@@ -91,8 +105,14 @@ function RegisterForm({
           Email
         </label>
         <div className="input-group">
-          <span className="input-group-text">
-            <img src={email_icon} alt="Email Icon" width="20" height="20" />
+          <span className="input-group-text" aria-hidden="true">
+            <img
+              src={email_icon}
+              alt="Ícono de correo electrónico"
+              width="20"
+              height="20"
+              aria-label="Ícono de correo electrónico"
+            />
           </span>
           <input
             type="email"
@@ -102,6 +122,7 @@ function RegisterForm({
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            aria-label="Introduce tu correo electrónico"
           />
         </div>
       </div>
@@ -110,12 +131,13 @@ function RegisterForm({
           Contraseña
         </label>
         <div className="input-group">
-          <span className="input-group-text">
+          <span className="input-group-text" aria-hidden="true">
             <img
               src={password_icon}
-              alt="Password Icon"
+              alt="Ícono de contraseña"
               width="20"
               height="20"
+              aria-label="Ícono de contraseña"
             />
           </span>
           <input
@@ -126,17 +148,19 @@ function RegisterForm({
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            aria-label="Introduce tu contraseña"
           />
         </div>
       </div>
       <div className="d-flex justify-content-between">
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn btn-primary" aria-label="Enviar formulario de registro">
           Registrar
         </button>
         <button
           type="button"
           className="btn btn-primary"
           onClick={onLogin} // Llama a la función para abrir el modal de inicio de sesión
+          aria-label="Ir al formulario de inicio de sesión"
         >
           Ingresar
         </button>

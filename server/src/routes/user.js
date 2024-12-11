@@ -6,6 +6,11 @@ const { UserErrors } = require("../error");
 
 const router = Router();
 
+// Clave secreta para JWT (idealmente debería estar en variables de entorno)
+const JWT_SECRET = process.env.JWT_SECRET || "secret";
+const JWT_EXPIRATION = "1h";
+
+// Ruta de registro de usuario
 router.post("/register", async (req, res) => {
   try {
     const { nombre, apellido, email, password } = req.body;
@@ -50,15 +55,17 @@ router.post("/register", async (req, res) => {
     }
 
     // Verificar si el correo electrónico ya existe
-    const existingUserByEmail = await UserModel.findOne({ email });
-    if (existingUserByEmail) {
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
       return res.status(UserErrors.EMAIL_EXISTS.statusCode).json({
         message: UserErrors.EMAIL_EXISTS.message,
       });
     }
 
+    // Hashear la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Crear nuevo usuario
     const newUser = new UserModel({
       nombre,
       apellido,
@@ -67,7 +74,15 @@ router.post("/register", async (req, res) => {
     });
     await newUser.save();
 
-    res.status(201).json(newUser);
+    res.status(201).json({
+      message: "Usuario registrado exitosamente",
+      user: {
+        id: newUser._id,
+        nombre: newUser.nombre,
+        apellido: newUser.apellido,
+        email: newUser.email,
+      },
+    });
   } catch (error) {
     console.error("Error al registrar el usuario:", error);
     res.status(UserErrors.SERVER_ERROR.statusCode).json({
@@ -77,6 +92,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// Ruta de inicio de sesión
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -87,6 +103,7 @@ router.post("/login", async (req, res) => {
       });
     }
 
+    // Buscar usuario por email
     const user = await UserModel.findOne({ email });
 
     if (!user) {
@@ -94,15 +111,32 @@ router.post("/login", async (req, res) => {
         message: UserErrors.USER_NOT_FOUND.message,
       });
     }
+
+    // Comparar contraseñas
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(UserErrors.INVALID_CREDENTIALS.statusCode).json({
         message: UserErrors.INVALID_CREDENTIALS.message,
       });
     }
-    const token = jwt.sign({ id: user._id }, "secret", { expiresIn: "1h" });
-    res.json({ message: "Inicio de sesión exitoso", token, userID: user._id });
+
+    // Generar token JWT
+    const token = jwt.sign({ id: user._id, nombre: user.nombre }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRATION,
+    });
+
+    res.json({
+      message: "Inicio de sesión exitoso",
+      token,
+      user: {
+        id: user._id,
+        nombre: user.nombre,
+        apellido: user.apellido,
+        email: user.email,
+      },
+    });
   } catch (err) {
+    console.error("Error durante el inicio de sesión:", err);
     res.status(UserErrors.SERVER_ERROR.statusCode).json({
       error: UserErrors.SERVER_ERROR.message,
       details: err.message,
@@ -110,19 +144,20 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// Middleware para verificar el token JWT
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (authHeader) {
     const token = authHeader.split(" ")[1];
-    jwt.verify(token, "secret", (err, user) => {
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
       if (err) {
-        return res.sendStatus(403);
+        return res.status(403).json({ message: "Token inválido o expirado" });
       }
-      req.user = user;
+      req.user = decoded;
       next();
     });
   } else {
-    res.sendStatus(401);
+    res.status(401).json({ message: "Token no proporcionado" });
   }
 };
 
