@@ -11,8 +11,8 @@ import {
 import axios from "axios";
 import logo from "../../assets/logo_w.png";
 import { FaShoppingCart } from "react-icons/fa";
-import personIcon from "../../assets/person.png"; // Asegúrate de tener la imagen en esa ruta
-import "./NavbarComponent.css"; // Asegúrate de tener este archivo creado
+import defaultPersonIcon from "../../assets/person.png"; // Imagen por defecto para el usuario
+import "./NavbarComponent.css";
 
 const NavbarComponent = ({
   openLoginModal,
@@ -24,8 +24,29 @@ const NavbarComponent = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para saber si el usuario está logueado
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [products, setProducts] = useState([]);
+  const [userImage, setUserImage] = useState(defaultPersonIcon);
+
+  // Verificar el estado de autenticación al cargar la página
+  useEffect(() => {
+    const savedLoginState = localStorage.getItem("isLoggedIn");
+    if (savedLoginState === "true") {
+      setIsLoggedIn(true);
+      // Puedes cargar la imagen del usuario desde el servidor si es necesario
+      setUserImage(localStorage.getItem("userImage") || defaultPersonIcon);
+    }
+  }, []);
+
+  // Guardar el estado de autenticación en localStorage
+  const saveLoginState = (loggedIn, image) => {
+    localStorage.setItem("isLoggedIn", loggedIn);
+    setIsLoggedIn(loggedIn);
+    if (image) {
+      localStorage.setItem("userImage", image);
+      setUserImage(image);
+    }
+  };
 
   // Obtener categorías desde el backend
   useEffect(() => {
@@ -41,13 +62,12 @@ const NavbarComponent = ({
     fetchCategories();
   }, []);
 
-  // Manejar el inicio de sesión (esto debe ser modificado según tu lógica de autenticación)
+  // Manejar el inicio de sesión
   const handleLogin = async (credentials) => {
     try {
       const response = await axios.post("http://localhost:3001/api/login", credentials);
       if (response.data.success) {
-        setIsLoggedIn(true); // Iniciar sesión
-        // Puedes almacenar el token aquí, si es necesario
+        saveLoginState(true, response.data.userImage || defaultPersonIcon);
       } else {
         console.log("Error en inicio de sesión");
       }
@@ -79,6 +99,13 @@ const NavbarComponent = ({
     } catch (error) {
       console.error("Error al obtener productos:", error);
     }
+  };
+
+  // Cerrar sesión
+  const handleLogout = () => {
+    saveLoginState(false, defaultPersonIcon);
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userImage");
   };
 
   return (
@@ -141,15 +168,23 @@ const NavbarComponent = ({
                   Ingresar
                 </button>
               ) : (
-                <Nav.Link href="#profile" aria-label="Perfil de usuario">
-                  <img
-                    src={personIcon}
-                    alt="Ícono de usuario"
-                    width="30"
-                    height="30"
-                    className="person-icon rounded-circle"
-                  />
-                </Nav.Link>
+                <NavDropdown
+                  title={
+                    <img
+                      src={userImage}
+                      alt="Ícono de usuario"
+                      width="30"
+                      height="30"
+                      className="person-icon rounded-circle"
+                    />
+                  }
+                  id="user-dropdown"
+                  alignRight
+                >
+                  <NavDropdown.Item onClick={handleLogout}>
+                    Cerrar sesión
+                  </NavDropdown.Item>
+                </NavDropdown>
               )}
             </Nav>
           </Nav>

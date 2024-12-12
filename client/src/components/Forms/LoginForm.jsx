@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { UserContext } from "../../UserContext";
 import password_icon from "../../assets/password.png";
 import email_icon from "../../assets/email.png";
+import defaultPersonIcon from "../../assets/person.png"; // Importa el icono por defecto
 
 function LoginForm({ onClose, onRegister, onSuccess, onError }) {
   const [email, setEmail] = useState("");
@@ -23,8 +24,13 @@ function LoginForm({ onClose, onRegister, onSuccess, onError }) {
       if (response.ok) {
         const data = await response.json();
         console.log("Login successful:", data);
-        setUser(data); // Guardar la información del usuario en el contexto
+        
+        // Guarda la imagen del usuario o usa un icono por defecto
+        const userImage = data.imagen || defaultPersonIcon;
+        setUser({ ...data, imagen: userImage });
         localStorage.setItem("token", data.token); // Almacena el token en localStorage
+        localStorage.setItem("userImage", userImage); // Guarda la imagen del usuario en localStorage
+
         onSuccess(data.nombre); // Llamar a la función onSuccess con el nombre del usuario
       } else {
         const errorData = await response.json();
